@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.lovelyz.mapper.TestMapper">
+
+    <resultMap type="Test" id="TestResult">
+        <result property="testId" column="test_id"/>
+        <result property="testName" column="test_name"/>
+        <result property="testMoney" column="test_money"/>
+        <result property="testDate" column="test_date"/>
+    </resultMap>
+
+    <sql id="selectTestVo">
+        select test_id, test_name, test_money, test_date from test
+    </sql>
+
+    <select id="selectTestList" parameterType="Test" resultMap="TestResult">
+        <include refid="selectTestVo"/>
+        <where>
+            <if test="testName != null  and testName != ''">and test_name like concat('%', #{testName}, '%')</if>
+            <if test="testMoney != null ">and test_money = #{testMoney}</if>
+            <if test="testDate != null ">and test_date = #{testDate}</if>
+        </where>
+    </select>
+
+    <select id="selectTestById" parameterType="Long" resultMap="TestResult">
+        <include refid="selectTestVo"/>
+        where test_id = #{testId}
+    </select>
+
+    <insert id="insertTest" parameterType="Test">
+        insert into test
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="testId != null ">test_id,</if>
+            <if test="testName != null  and testName != ''">test_name,</if>
+            <if test="testMoney != null ">test_money,</if>
+            <if test="testDate != null ">test_date,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="testId != null ">#{testId},</if>
+            <if test="testName != null  and testName != ''">#{testName},</if>
+            <if test="testMoney != null ">#{testMoney},</if>
+            <if test="testDate != null ">#{testDate},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTest" parameterType="Test">
+        update test
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="testName != null  and testName != ''">test_name = #{testName},</if>
+            <if test="testMoney != null ">test_money = #{testMoney},</if>
+            <if test="testDate != null ">test_date = #{testDate},</if>
+        </trim>
+        where test_id = #{testId}
+    </update>
+
+    <delete id="deleteTestById" parameterType="Long">
+        delete from test where test_id = #{testId}
+    </delete>
+
+    <delete id="deleteTestByIds" parameterType="String">
+        delete from test where test_id in
+        <foreach item="testId" collection="array" open="(" separator="," close=")">
+            #{testId}
+        </foreach>
+    </delete>
+
+</mapper>
